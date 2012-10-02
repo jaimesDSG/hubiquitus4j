@@ -82,7 +82,7 @@ public class HTwitterAdapterInbox extends AdapterInbox{
 		 * Configuration for access to twitter account
 		 */
 		ConfigurationBuilder cb = new ConfigurationBuilder();
-		cb.setDebugEnabled(true).setUseSSL(false); 
+		cb.setDebugEnabled(true).setUseSSL(true); 
 		cb.setOAuthConsumerKey(consumerKey);
 		cb.setOAuthConsumerSecret(consumerSecret);
 		cb.setOAuthAccessToken(twitterAccessToken);
@@ -173,7 +173,6 @@ public class HTwitterAdapterInbox extends AdapterInbox{
 		hauthortweet.setGeo(tweet.getUser().isGeoEnabled());
 		hauthortweet.setVerified(tweet.getUser().isVerified());
 		hauthortweet.setName(tweet.getUser().getName());
-		hauthortweet.setScrName(tweet.getUser().getScreenName());
 
 		//Construct the tweet JSONObject		
 		htweet.setId(tweet.getId());
@@ -183,6 +182,8 @@ public class HTwitterAdapterInbox extends AdapterInbox{
 
 		message.setPayload(htweet);
 		message.setType("hTweet");
+		
+		message.setAuthor(tweet.getUser().getScreenName() + "@twitter.com");
 
 
 		if (log.isDebugEnabled()) {
