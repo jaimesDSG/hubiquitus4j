@@ -53,37 +53,6 @@ public class HTweetAuthor extends JSONObject {
 	/* Getters & Setters */
 	
 	/**
-	 * @return The twitter name of the author. 
-	 */
-	public String getScrName() {
-		String scrName;
-		try {
-			scrName = this.getString("scrName");
-		} catch (Exception e) {
-			scrName = null;			
-		}
-		return scrName;
-	}
-
-	/**
-	 * Set the twitter name of the author.
-	 * @param scrName
-	 */
-	public void setScrName(String scrName) {
-		try {
-			if(scrName == null || scrName.length()== 0) {
-				log.error("message: scrName attibute is mandatoty;");
-				return;
-			} else {
-				this.put("scrName", scrName);
-			}
-		} catch (JSONException e) {
-			log.error("Can't update the scrName attribut",e);
-		}
-	}
-	
-	
-	/**
 	 * @return The number of tweet the author has sent. 0 if not provided.
 	 */
 	public int getStatus() {
