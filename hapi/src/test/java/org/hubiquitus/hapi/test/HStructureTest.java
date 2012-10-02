@@ -620,7 +620,7 @@ public class HStructureTest {
 		HCondition cond = new HCondition();
 		cond.setValue(OperandNames.NE, value);
 		cond.setValueArray(OperandNames.NIN, values);
-		condition.setCondtion(OperandNames.NOT, cond);
+		condition.setCondition(OperandNames.NOT, cond);
 		JSONArray conditionArray = new JSONArray();
 		conditionArray.put(cond);
 		conditionArray.put(cond);
@@ -630,7 +630,7 @@ public class HStructureTest {
 		Assert.assertEquals(condition.getValue(OperandNames.EQ).toString(), value.toString());
 		Assert.assertEquals(condition.getArrayOfValue(OperandNames.IN).toString(), values.toString());
 		Assert.assertEquals(condition.getCondition(OperandNames.NOT).toString(), cond.toString());
-		Assert.assertEquals(condition.getCondtionArray(OperandNames.AND).toString(), conditionArray.toString());
+		Assert.assertEquals(condition.getConditionArray(OperandNames.AND).toString(), conditionArray.toString());
 		
 	}
 	

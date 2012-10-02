@@ -19,48 +19,49 @@
 
 package org.hubiquitus.hubotsdk.adapters;
 
-import java.util.Map;
-
+import org.hubiquitus.hapi.client.HMessageDelegate;
 import org.hubiquitus.hapi.hStructures.HMessage;
 import org.hubiquitus.hubotsdk.AdapterOutbox;
+import org.hubiquitus.hubotsdk.HubotStructure;
+import org.hubiquitus.hubotsdk.ProducerTemplateSingleton;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HubotAdapterOutbox extends AdapterOutbox {
 
-	private String name;
-	private String jid;
-	
-	public HubotAdapterOutbox(String name) {
-		this.name = name;
+	final Logger logger = LoggerFactory.getLogger(HubotAdapterOutbox.class);
+
+	public HubotAdapterOutbox() {
+		super();
 	}
 
 	@Override
-	public void sendMessage(HMessage message) {
-		hclient.send(message, null);
-	}
-
-
-	@Override
-	public void setProperties(Map<String,String> params) {	
-		if(params.get("jid") != null) 
-			this.jid = params.get("jid");
+	public void setProperties(JSONObject properties) {
+		// nop
+		
 	}
 
 	@Override
 	public void start() {
+		// nop
 	}
 
 	@Override
 	public void stop() {
+		// nop
+		
 	}
-
-	/* Getters and Setters */
-	public String getJid() {
-		return jid;
-	}
-
 
 	@Override
-	public String toString() {
-		return "HubotAdapter [name=" + name + ", jid=" + jid + "]";
+	public void sendMessage(HMessage message, final HMessageDelegate callback) {
+		    hclient.send(message, new HMessageDelegate() {
+			
+			@Override
+			public void onMessage(HMessage message) {
+				ProducerTemplateSingleton.getProducerTemplate().sendBody("seda:inbox",new HubotStructure(message, callback));
+			}
+		});
 	}
+
 }

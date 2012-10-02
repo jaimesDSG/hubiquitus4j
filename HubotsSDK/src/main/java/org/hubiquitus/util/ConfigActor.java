@@ -19,8 +19,10 @@
 
 package org.hubiquitus.util;
 
-import java.util.ArrayList;
 import java.util.Map;
+
+import org.hubiquitus.hapi.hStructures.HCondition;
+import org.json.JSONArray;
 
 public class ConfigActor {
 
@@ -43,44 +45,36 @@ public class ConfigActor {
 		}
 	}
 
-	public String name;
-	public String jid;
-	public String pwdhash;
+	public String type;
+	public String actor;
+	public String pwd;
+	public String hserver;
 	public String endpoint;
-	public Map<String,String>  properties;
-	public ArrayList<AdapterConfig> adapters;
-	public ArrayList<String> inbox;
-	public ArrayList<String> outboxes;
+	public HCondition filter;
+	public JSONArray adapters;
 	
-	
-	
-
-	public String getName() { return name; }
-	public String getJid() { return jid; }
-	public String getPwdhash() { return pwdhash; }
+	public String getType() { return type; }
+	public String getActor() { return actor; }
+	public String getPwd() { return pwd; }
+	public String getHServer() {return hserver; }
 	public String getEndpoint() { return endpoint; }
-	public Map<String,String> getProperties() { return properties;}
-	public void setJid(String s) { jid = s; }
-	public ArrayList<AdapterConfig> getAdapters() { return adapters; }
-	public ArrayList<String> getInbox() { return inbox; }
-	public ArrayList<String> getOutboxes() { return outboxes; }
+	public HCondition getFilter() { return filter; }
+	public JSONArray getAdapters() { return adapters; }
 
-	public void setName(String s) { name = s; }
-	public void setPwdhash(String s) { pwdhash = s; }
+	public void setType(String s) { type = s; }
+	public void setActor(String s) { actor = s; }
+	public void setPwd(String s) { pwd = s; }
+	public void setHServer(String s) { hserver = s; }
 	public void setEndpoint(String s) { endpoint = s; }
-	public void setProperties(Map<String,String> map) { properties = map;}
-	public void setAdapters(ArrayList<AdapterConfig> a) { adapters = a; }
-	public void setInbox(ArrayList<String> a) { inbox = a; }
+	public void setFilter(HCondition f) {filter = f; }
+	public void setAdapters(JSONArray a) { adapters = a; }
 
-	public void setOutboxes(ArrayList<String> a) { outboxes = a; }
 	@Override
 	public String toString() {
-		String test =  "ConfigActor [name=" + name + ", jid=" + jid + ", pwdhash="
-				+ pwdhash + ", endpoints=" + endpoint + ", adapters=";
-		if( adapters == null )
-			test += "null , inbox=" + inbox + ", outbox=" + outboxes + "]";
-		else 
-			test += adapters.toString() +" , inbox=" + inbox + ", outbox=" + outboxes + "]";
+		String test = "ConfigActor [type=" + type + ", actor=" + actor
+				+ ", pwd=" + pwd + ", hserver=" + hserver + ", endpoint="
+				+ endpoint + ", filter=" + filter + ", adapters="
+				+ adapters + "]";
 		return test;
 	}
 }

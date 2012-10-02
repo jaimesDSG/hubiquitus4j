@@ -27,7 +27,6 @@ package org.hubiquitus.hapi.hStructures;
  */
 
 public enum ConnectionStatus {
-	UNKNOWN(0),
 	CONNECTING(1),
 	CONNECTED(2),
 	DISCONNECTING(5),
@@ -53,7 +52,7 @@ public enum ConnectionStatus {
 	 */
 	public static ConnectionStatus constant(int value) {
 		ConnectionStatus [] _values = ConnectionStatus.values();
-		ConnectionStatus _value = ConnectionStatus.UNKNOWN;
+		ConnectionStatus _value = ConnectionStatus.DISCONNECTED;
 		for (int i = 0; i < _values.length; i++) {
 			if(_values[i].value == value){
 				_value = _values[i];

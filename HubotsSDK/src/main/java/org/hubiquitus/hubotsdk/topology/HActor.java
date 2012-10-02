@@ -1,4 +1,4 @@
-package org.hubiquitus.hubotsdk;
+package org.hubiquitus.hubotsdk.topology;
 
 import org.hubiquitus.hapi.hStructures.HCondition;
 import org.json.JSONException;
@@ -17,6 +17,10 @@ public class HActor extends JSONObject {
 		super(jsonObj, JSONObject.getNames(jsonObj));
 	}
 
+
+	public HActor(String jsonString) throws JSONException {
+		super(jsonString);
+	}
 
 	/* Getters & Setters */
 	/**
@@ -96,7 +100,7 @@ public class HActor extends JSONObject {
 	 * Set the password used by the actor to establish a connection with the hserver.
 	 * @param pwd
 	 */
-	public void setPws(String pwd){
+	public void setPwd(String pwd){
 		try {
 			if(pwd == null){
 				this.remove("pwd");

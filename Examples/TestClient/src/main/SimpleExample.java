@@ -31,7 +31,6 @@ import javax.swing.JFrame;
 public class SimpleExample {
 
 	public static void main(String[] args) {
-		
 		JFrame window = new JFrame("test");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setSize(1150, 800);

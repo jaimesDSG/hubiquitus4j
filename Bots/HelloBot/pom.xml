@@ -42,30 +42,41 @@
     </build>
 
   <dependencies>
+	
 	<dependency>
-        <groupId>org.hubiquitus.hubiquitus4j</groupId>
-        <artifactId>HubotsSDK</artifactId>
-        <version>0.3.11</version>
-    </dependency>
+                <groupId>org.json.jar</groupId>
+                <artifactId>json-lib</artifactId>
+                <version>0.0.0</version>
+                <scope>system</scope>
+                <systemPath>${basedir}/../../external-libs/json-org.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.hubiquitus.hubiquitus4j</groupId>
+            <artifactId>HubotsSDK</artifactId>
+            <version>0.5.0</version>
+        </dependency>
 	<dependency>
-        <groupId>org.json.jar</groupId>
-        <artifactId>json-lib</artifactId>
-        <version>0.0.0</version>
-        <scope>system</scope>
-        <systemPath>${basedir}/lib/org.json.jar</systemPath>
-    </dependency>
-	<dependency>
-        <groupId>org.hubiquitus.hapi</groupId>
-        <artifactId>hapi</artifactId>
-        <version>0.3.11</version>
-        <scope>system</scope>
-    	<systemPath>${basedir}/lib/hapi-0.3.11.jar</systemPath>
+         <groupId>org.hubiquitus.hubiquitus4j</groupId>
+ 		 <artifactId>hAPI</artifactId>
+  		<version>0.5.0</version>
     </dependency>
     <dependency>
 		<groupId>log4j</groupId>
 		<artifactId>log4j</artifactId>
 		<version>1.2.17</version>
 	</dependency>
+		<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.6.6</version>
+		<scope>compile</scope>
+ 	 </dependency>
+  	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-nop</artifactId>
+		<version>1.6.6</version>
+		<scope>compile</scope>
+ 	 </dependency>
             
   </dependencies> 
 </project>

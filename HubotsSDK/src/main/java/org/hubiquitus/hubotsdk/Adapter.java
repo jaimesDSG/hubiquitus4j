@@ -19,28 +19,27 @@
 
 package org.hubiquitus.hubotsdk;
 
-import java.util.Map;
-
 import org.apache.camel.impl.DefaultCamelContext;
 import org.hubiquitus.hapi.client.HClient;
 import org.hubiquitus.hapi.client.HMessageDelegate;
 import org.hubiquitus.hapi.hStructures.HMessage;
 import org.hubiquitus.hapi.hStructures.ResultStatus;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-public abstract class Adapter implements HMessageDelegate{
+public abstract class Adapter {
 	final Logger logger = LoggerFactory.getLogger(Adapter.class);
 	
 	protected HClient hclient;
-	protected String name;
+	protected String actor;
 	protected DefaultCamelContext camelContext;
 	
 	/**
 	 * Method used to set properties of the adapters. 
 	 * SHOULD BE OVERWRITE
-	 * @param params
+	 * @param properties
 	 */
-	public abstract void setProperties(Map<String,String> params);
+	public abstract void setProperties(JSONObject properties);
 
 	/**
 	 *  Method to start the bot
@@ -61,27 +60,23 @@ public abstract class Adapter implements HMessageDelegate{
 		this.hclient = hclient;				
 	}
 	
-	public final void setName(String name) {
-		this.name = name;				
+	public final void setActor(String actor) {
+		this.actor = actor;				
 	}
 	
-	public final String getName() {
-		return name;
+	public final String getActor() {
+		return actor;
 	}
 	
 	
 	/**
 	 * Allow the user to update the properties of the adapter. During this update, this adapter is stop.
-	 * @param params
+	 * @param properties
 	 */
-	public final void updateProperties(Map<String,String> params) {
+	public final void updateProperties(JSONObject properties) {
 		stop();
-		setProperties(params);
+		setProperties(properties);
 		start();
 	}
-	
-	public void onMessage(HMessage message) {
-		if(message.getPayloadAsHResult().getStatus() != ResultStatus.NO_ERROR) 
-			logger.error(("Erreur lors de la commande : " + message.getPayloadAsHResult()));
-	}
+
 }

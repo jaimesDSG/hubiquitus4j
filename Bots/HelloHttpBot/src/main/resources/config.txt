@@ -1,16 +1,22 @@
 {
-	"name" : "com.mycompany.WordCount",
-	"jid" : "u1@hub.novediagroup.com",
-	"pwdhash" : "u1",
-	"endpoint" : "http://hub.novediagroup.com:8080",
+	"type" : "com.mycompany.WordCount",
+	"actor" : "u1@localhost",
+	"pwd" : "u1",
+	"hserver" : "http://localhost:8080",
 	"adapters" : [
 		{
-		"name" : "httpAdapter",
-		"type" : "HHttpAdapter",
+		"actor" : "httpInbox@domain",
+		"type" : "org.hubiquitus.hubotsdk.adapters.HHttpAdapterInbox",
+		"properties" : {
+				"port" : "8086"
+		}	
+	},
+	{
+		"actor" : "httpOutbox@domain",
+		"type" : "org.hubiquitus.hubotsdk.adapters.HHttpAdapterOutbox",
 		"properties" : {
 				"port" : "8086"
 		}
-	}],
-	"inbox" : [ "httpAdapter" ],
-	"outboxes" : [ "" ]
+	}
+	],
 }

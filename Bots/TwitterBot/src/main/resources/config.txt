@@ -1,8 +1,8 @@
 {
 	"name" : "com.mycompany.WordCount",
-	"jid" : "u1@hub.novediagroup.com",
+	"jid" : "u1@localhost",
 	"pwdhash" : "u1",
-	"endpoint" : "http://hub.novediagroup.com:8080",
+	"endpoint" : "http://localhost:8080",
 	"adapters" : [ 
 		{
 			"name" : "twitterAdapter",

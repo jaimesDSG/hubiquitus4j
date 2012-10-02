@@ -31,7 +31,7 @@ public class HGeo extends JSONObject {
 /**
  * @return Longitude of the location. Null if undefined.
  */
-	public Double getLng() {
+	public double getLng() {
 		Double lng;
 		try {
 			lng = this.getDouble("lng");
@@ -56,7 +56,7 @@ public class HGeo extends JSONObject {
 	/**
 	 * @return Latitude of the location. Null if undefined.
 	 */
-	public Double getLat() {
+	public double getLat() {
 		Double lat;
 		try {
 			lat = this.getDouble("lat");

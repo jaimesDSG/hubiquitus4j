@@ -47,6 +47,7 @@ import org.hubiquitus.hapi.transport.HTransportOptions;
 import org.hubiquitus.hapi.transport.socketio.HTransportSocketio;
 import org.hubiquitus.hapi.util.HUtil;
 import org.joda.time.DateTime;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -457,14 +458,7 @@ public class HClient {
 		if(messageDelegate == null){
 			throw new MissingAttrException("messageDelegate");
 		}
-        //TODO to ask if the actor = "session"
-		JSONObject params = new JSONObject();
-		try {
-			params.put("filter", filter);
-		} catch (JSONException e) {
-			logger.warn("messag: ", e);
-		}
-		HMessage cmdMessage = buildCommand("session", "hSetFilter", params, null);
+		HMessage cmdMessage = buildCommand("session", "hSetFilter", filter, null);
 		cmdMessage.setTimeout(options.getTimeout());
 		this.send(cmdMessage, messageDelegate);
 	}
@@ -657,17 +651,88 @@ public class HClient {
 		return buildMessage(actor, "hCommand", hcommand, options);
 	}
 
-	/**
-	 * Helper to create a hMessage with a hResult payload.
-	 * @param actor : The actor for the hMessage. Mandatory.
-	 * @param ref : The id of the message received, for correlation purpose. Mandatory.
-	 * @param status : Result status code. Mandatory.
-	 * @param result : The result of a command. Possible types: JSONObject, JSONArray, String, Boolean, Number. Not mandatory.
-	 * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
-	 * @return A hMessage with a hResult payload.
-	 * @throws MissingAttrException raised if a mandatory attribute is not well provided
-	 */
-	public HMessage buildResult(String actor, String ref, ResultStatus status, Object result, HMessageOptions options) throws MissingAttrException {
+
+    /**
+     * Helper to create a hMessage with a hResult payload.
+     * @param actor : The actor for the hMessage. Mandatory.
+     * @param ref : The id of the message received, for correlation purpose. Mandatory.
+     * @param status : Result status code. Mandatory.
+     * @param result : The String result of a command.
+     * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+     * @return A hMessage with a hResult payload.
+     * @throws MissingAttrException raised if a mandatory attribute is not well provided
+     */
+    public HMessage buildResult(String actor, String ref, ResultStatus status, String result, HMessageOptions options) throws MissingAttrException {
+        return internalBuildResult(actor, ref, status, result, options);
+    }
+
+    /**
+     * Helper to create a hMessage with a hResult payload.
+     * @param actor : The actor for the hMessage. Mandatory.
+     * @param ref : The id of the message received, for correlation purpose. Mandatory.
+     * @param status : Result status code. Mandatory.
+     * @param result : The JSONObject result of a command.
+     * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+     * @return A hMessage with a hResult payload.
+     * @throws MissingAttrException raised if a mandatory attribute is not well provided
+     */
+    public HMessage buildResult(String actor, String ref, ResultStatus status, JSONObject result, HMessageOptions options) throws MissingAttrException {
+        return internalBuildResult(actor, ref, status, result, options);
+    }
+
+    /**
+     * Helper to create a hMessage with a hResult payload.
+     * @param actor : The actor for the hMessage. Mandatory.
+     * @param ref : The id of the message received, for correlation purpose. Mandatory.
+     * @param status : Result status code. Mandatory.
+     * @param result : The JSONArray result of a command.
+     * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+     * @return A hMessage with a hResult payload.
+     * @throws MissingAttrException raised if a mandatory attribute is not well provided
+     */
+    public HMessage buildResult(String actor, String ref, ResultStatus status, JSONArray result, HMessageOptions options) throws MissingAttrException {
+        return internalBuildResult(actor, ref, status, result, options);
+    }
+
+    /**
+     * Helper to create a hMessage with a hResult payload.
+     * @param actor : The actor for the hMessage. Mandatory.
+     * @param ref : The id of the message received, for correlation purpose. Mandatory.
+     * @param status : Result status code. Mandatory.
+     * @param result : The double result of a command.
+     * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+     * @return A hMessage with a hResult payload.
+     * @throws MissingAttrException raised if a mandatory attribute is not well provided
+     */
+    public HMessage buildResult(String actor, String ref, ResultStatus status, double result, HMessageOptions options) throws MissingAttrException {
+        return internalBuildResult(actor, ref, status, result, options);
+    }
+
+    /**
+     * Helper to create a hMessage with a hResult payload.
+     * @param actor : The actor for the hMessage. Mandatory.
+     * @param ref : The id of the message received, for correlation purpose. Mandatory.
+     * @param status : Result status code. Mandatory.
+     * @param result : The boolean result of a command.
+     * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+     * @return A hMessage with a hResult payload.
+     * @throws MissingAttrException raised if a mandatory attribute is not well provided
+     */
+     public HMessage buildResult(String actor, String ref, ResultStatus status, boolean result, HMessageOptions options) throws MissingAttrException {
+        return internalBuildResult(actor, ref, status, result, options);
+    }
+
+        /**
+       * Helper to create a hMessage with a hResult payload.
+       * @param actor : The actor for the hMessage. Mandatory.
+       * @param ref : The id of the message received, for correlation purpose. Mandatory.
+       * @param status : Result status code. Mandatory.
+       * @param result : The result of a command. Possible types: JSONObject, JSONArray, String, Boolean, Number. Not mandatory.
+       * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+       * @return A hMessage with a hResult payload.
+       * @throws MissingAttrException raised if a mandatory attribute is not well provided
+       */
+	private HMessage internalBuildResult(String actor, String ref, ResultStatus status, Object result, HMessageOptions options) throws MissingAttrException {
 		// check for required attributes
 		if (actor == null || actor.length() <= 0) {
 			throw new MissingAttrException("actor");

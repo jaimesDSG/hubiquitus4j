@@ -19,11 +19,14 @@
 
 package org.hubiquitus.hubotsdk;
 
+import org.hubiquitus.hapi.hStructures.HMessage;
+
 public abstract class AdapterInbox extends Adapter {
 	
-	// Method for input message and command 
-	public final void put(Object object) {		
-		ProducerTemplateSingleton.getProducerTemplate().sendBody("seda:inbox",object);
+	// Method for input message 
+	public final void put(HMessage message) {	
+		HubotStructure hubotStruct = new HubotStructure(message, null);
+		ProducerTemplateSingleton.getProducerTemplate().sendBody("seda:inbox",hubotStruct);
 	}
 
 }

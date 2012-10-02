@@ -21,11 +21,9 @@ package org.hubiquitus.hubotsdk.adapters;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.activation.DataHandler;
-import org.joda.time.DateTime;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.camel.Exchange;
@@ -36,34 +34,43 @@ import org.hubiquitus.hubotsdk.AdapterInbox;
 import org.hubiquitus.hubotsdk.adapters.HHttpAdapter.HHttpAdapterRouteBuilder;
 import org.hubiquitus.hubotsdk.adapters.HHttpAdapter.HHttpAttachement;
 import org.hubiquitus.hubotsdk.adapters.HHttpAdapter.HHttpData;
+import org.joda.time.DateTime;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class HHttpAdapterInbox extends AdapterInbox implements Processor{
 
+	final Logger logger = LoggerFactory.getLogger(HHttpAdapterInbox.class);
+	
 	private String host = "0.0.0.0";
 	private int port = 80;
 	private String path = "";
 	private String jettyCamelUri = "";
 	
 	@Override
-	public void setProperties(Map<String, String> params) {
-		if(params != null && params.containsKey("host")) {
-			this.host = params.get("host");
-		}
-		
-		if(params != null && params.containsKey("port")) {
-			this.port = Integer.parseInt(params.get("port"));
-		}
-		
-		if(params != null && params.containsKey("path")) {
-			this.path = params.get("path");
-			if (this.path.contains("?")) {
-				int interrogationIndex = this.path.indexOf("?");
-				this.path = this.path.substring(interrogationIndex, this.path.length());
+	public void setProperties(JSONObject properties) {
+		if(properties != null){
+			try {
+				if (properties.has("host")){
+					this.host = properties.getString("host");
+				}
+				if (properties.has("port")){
+					this.port = properties.getInt("port");
+				}
+				if (properties.has("path")){
+					this.path = properties.getString("path");
+					if (this.path.contains("?")) {
+						int interrogationIndex = this.path.indexOf("?");
+						this.path = this.path.substring(interrogationIndex, this.path.length());
+					}
+				}
+			} catch (Exception e) {
+				logger.warn("message: ", e);
 			}
 		}
-		
 	}
 
 	@Override
@@ -79,7 +86,7 @@ public class HHttpAdapterInbox extends AdapterInbox implements Processor{
 		try {
 			camelContext.addRoutes(routes);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn("message: ", e);
 		}
 	}
 
@@ -107,7 +114,7 @@ public class HHttpAdapterInbox extends AdapterInbox implements Processor{
 		
 		//create message to send
 		HMessage message = new HMessage();
-		message.setAuthor(this.name);
+		message.setAuthor(this.actor);
 		if (headers != null) {
 			JSONObject jsonHeaders = new JSONObject(); 
 			for (String key : headers.keySet()) {
@@ -133,7 +140,7 @@ public class HHttpAdapterInbox extends AdapterInbox implements Processor{
 		httpData.setRawBody(rawBody);
 		
 		//create attachements
-		Map<String, HHttpAttachement> hattachements = new HashMap<String, HHttpAttachement>();
+		JSONObject hattachements = new JSONObject();
 		for (String key : attachments.keySet()) {
 			DataHandler attachement = attachments.get(key);
 			if(attachement != null) {
@@ -151,9 +158,13 @@ public class HHttpAdapterInbox extends AdapterInbox implements Processor{
 					byteOutputStream.write(buffer, 0, bytesRead);
 				}
 				hattachement.setData(byteOutputStream.toByteArray());
-				hattachements.put(key, hattachement);
+				try {
+					hattachements.put(key, hattachement);
+				} catch (JSONException e) {
+					logger.debug(e.toString());
+				}
 			} else {
-				hattachements.put(key, null);
+				//if attachment is null, do not put the key in hattachments.
 			}
 		}
 		

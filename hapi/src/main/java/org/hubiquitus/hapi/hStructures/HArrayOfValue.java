@@ -20,6 +20,10 @@ public class HArrayOfValue extends JSONObject {
 		this.name = name;
 	}
 	
+	public HArrayOfValue(String jsonString) throws JSONException{
+		super(jsonString);
+	}
+	
 	public HArrayOfValue(JSONObject jsonObj) throws JSONException{
 		super(jsonObj, JSONObject.getNames(jsonObj));
 	}

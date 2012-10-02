@@ -1,7 +1,5 @@
 package org.hubiquitus.hubotsdk.adapters;
 
-import java.util.Map;
-
 import org.hubiquitus.hapi.hStructures.HGeo;
 import org.hubiquitus.hapi.hStructures.HLocation;
 import org.hubiquitus.hapi.hStructures.HMessage;
@@ -9,6 +7,7 @@ import org.hubiquitus.hubotsdk.AdapterInbox;
 import org.hubiquitus.hubotsdk.adapters.HtwitterAdapter.HTweet;
 import org.hubiquitus.hubotsdk.adapters.HtwitterAdapter.HTweetAuthor;
 import org.joda.time.DateTime;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,20 +37,31 @@ public class HTwitterAdapterInbox extends AdapterInbox{
 	protected TwitterStream twitterStream;
 
 	@Override
-	public void setProperties(Map<String, String> params) {
-		if(params.get("consumerKey") != null) 
-			setConsumerKey(params.get("consumerKey"));
-		if(params.get("consumerSecret") != null) 
-			setConsumerSecret(params.get("consumerSecret"));
-		if(params.get("twitterAccessToken") != null) 
-			setTwitterAccessToken(params.get("twitterAccessToken"));
-		if(params.get("twitterAccessTokenSecret") != null) 
-			setTwitterAccessTokenSecret(params.get("twitterAccessTokenSecret"));
-		if(params.get("tags") != null) 
-			setTags(params.get("tags"));
-		if(params.get("lang") != null) 
-			setLangFilter(params.get("lang"));
-
+	public void setProperties(JSONObject properties) {
+		if(properties != null){
+			try{
+			if(properties.has("consumerKey")){
+				this.consumerKey = properties.getString("consumerKey");
+			}
+			if (properties.has("consumerSecret")) {
+				this.consumerSecret = properties.getString("consumerSecret");
+			}
+			if (properties.has("twitterAccessToken")) {
+				this.twitterAccessToken = properties.getString("twitterAccessToken");
+			}
+			if (properties.has("twitterAccessTokenSecret")) {
+				this.twitterAccessTokenSecret = properties.getString("twitterAccessTokenSecret");
+			}
+			if (properties.has("langFilter")) {
+				this.langFilter = properties.getString("langFilter");
+			}
+			if (properties.has("tags")) {
+				this.tags = properties.getString("tags");
+			}
+			}catch(Exception e){
+				log.debug("message: ",e);
+			}
+		}
 		log.info("Properties Initialized : " + this);
 
 	}

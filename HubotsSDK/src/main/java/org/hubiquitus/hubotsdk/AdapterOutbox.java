@@ -19,6 +19,7 @@
 
 package org.hubiquitus.hubotsdk;
 
+import org.hubiquitus.hapi.client.HMessageDelegate;
 import org.hubiquitus.hapi.hStructures.HMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,14 +32,10 @@ public abstract class AdapterOutbox extends Adapter {
 	
 	// Method for output message and command
     @SuppressWarnings("unused")
-	public final void onOutGoing(JSONObject jsonObj) {
-        try {
-			sendMessage(new HMessage(jsonObj));
-        } catch (JSONException e) {
-            logger.error("can not convert the JSON to hMessage", e);
-        }
+	public final void onOutGoing(HubotStructure hubotStruct) {
+		sendMessage(hubotStruct.getMessage(), hubotStruct.getCallback());
 	}
 
-	public abstract void sendMessage(HMessage message);
+	public abstract void sendMessage(HMessage message, HMessageDelegate callback);
 
 }

@@ -21,9 +21,8 @@ package org.hubiquitus.TwitterBot;
 
 
 import org.apache.log4j.Logger;
-import org.hubiquitus.hubotsdk.Actor;
-import org.hubiquitus.hapi.hStructures.HCommand;
 import org.hubiquitus.hapi.hStructures.HMessage;
+import org.hubiquitus.hubotsdk.Actor;
 
 public class TwitterBot extends Actor  {
 
@@ -40,10 +39,6 @@ public class TwitterBot extends Actor  {
 		log.info(messageIncoming.toString());
 	}
 
-	@Override
-	protected void inProcessCommand(HCommand commandIncoming) {
-		log.debug("not supported");
-	}
 
 
 

@@ -19,16 +19,16 @@
 
 package org.hubiquitus.hubotsdk;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 import org.apache.camel.builder.RouteBuilder;
 
 public class RouteGenerator extends RouteBuilder {
 
-	private Map< String, Class<Object> > outboxMap;
+	private ArrayList<String> outboxList;
 
-	public RouteGenerator(Map< String, Class<Object> >  outboxMap) {
-		this.outboxMap = outboxMap;
+	public RouteGenerator(ArrayList<String>  outboxList) {
+		this.outboxList = outboxList;
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class RouteGenerator extends RouteBuilder {
 		from("seda:hubotAdapterOutbox")
 			.to("bean:hubotAdapterOutbox?method=onOutGoing");
 
-		for(String key : outboxMap.keySet()) {
+		for(String key : outboxList) {
 			String routeName = "seda:" + key; 
 			String beanText ="bean:" + key + "?method=onOutGoing";
 			from(routeName)

@@ -45,22 +45,22 @@ import org.hubiquitus.hubotsdk.adapters.HubotAdapterInbox;
 import org.hubiquitus.hubotsdk.adapters.HubotAdapterOutbox;
 import org.hubiquitus.hubotsdk.topology.HAdapterConf;
 import org.hubiquitus.hubotsdk.topology.HTopology;
-import org.hubiquitus.util.ActorStatus;
+import org.hubiquitus.util.HubotStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Actor{
+public abstract class Hubot {
 
-	final Logger logger = LoggerFactory.getLogger(Actor.class);
+	final Logger logger = LoggerFactory.getLogger(Hubot.class);
 	
 	private static final String HUBOT_ADAPTER_OUTBOX = "hubotAdapterOutbox";
 	private static final String HUBOT_ADAPTER_INBOX = "hubotAdapterInbox";
 	
 	
-	private Actor outerclass = this;
-	private ActorStatus status;
+	private Hubot outerclass = this;
+	private HubotStatus status;
 	
 	private HClient hClient = new HClient();
 	private DefaultCamelContext camelContext = null;
@@ -70,8 +70,6 @@ public abstract class Actor{
 
 	
 	private HTopology topology;
-	
-	private JSONObject properties;
 	
 	private MessagesDelegate messageDelegate = new MessagesDelegate();
 	private StatusDelegate statusDelegate = new StatusDelegate();
@@ -99,7 +97,7 @@ public abstract class Actor{
 	    }
 	
 	/**
-	 * Connect the Actor to the hAPI with params set in the file "config.txt" 
+	 * Connect the Hubot to the hAPI with params set in the file "config.txt"
 	 */
 	protected final void start() {
 		try {
@@ -109,7 +107,7 @@ public abstract class Actor{
 			URL configFilePath = ClassLoader.getSystemResource("config.txt");
 			String jsonString = fileToString(configFilePath.getFile());
 			topology = new HTopology(jsonString);
-			setStatus(ActorStatus.CREATED);
+			setStatus(HubotStatus.CREATED);
 			//Connecting to HNode
 			HOptions options = new HOptions();
 			options.setTransport("socketio");
@@ -120,7 +118,7 @@ public abstract class Actor{
 			hClient.connect(topology.getActor(), topology.getPwd() , options);
 			// see onStatus to know how this actor go the started status
 		} catch (Exception e) {
-			logger.error(e.toString());
+			logger.error("Oooops a big error on starting this bot : ", e);
 		}
 	}
 	
@@ -140,7 +138,7 @@ public abstract class Actor{
 	 * Set the status status READY when its over
 	 */
 	protected final void initialized() {
-		setStatus(ActorStatus.INITIALIZED);
+		setStatus(HubotStatus.INITIALIZED);
 
 		//Create HubotAdapter (Mandatory)
 		createHubotAdapter();
@@ -150,7 +148,7 @@ public abstract class Actor{
 		createRoutes();
 		startAdapters();
 		createDispatcher();
-		setStatus(ActorStatus.READY);
+		setStatus(HubotStatus.READY);
 	}
 	
 	private void createRoutes() {
@@ -215,8 +213,7 @@ public abstract class Actor{
 							newAdapter.setHClient(hClient);
 							newAdapter.setCamelContext(camelContext);
 							adapterInstances.put(newAdapter.getActor(), newAdapter);
-							if(adapterConf.getType().matches("(?i).*Outbox.*")){
-								System.out.println(adapterConf.getType());
+							if(newAdapter instanceof AdapterOutbox){
 								adapterOutboxActors.add(newAdapter.getActor());
 							}
 						}
@@ -242,8 +239,7 @@ public abstract class Actor{
 	}
 	
 	private void createDispatcher(){
-		hubotDispatcher = new HubotDispatcher();
-		hubotDispatcher.setAdapterOutboxActors(adapterOutboxActors);
+		hubotDispatcher = new HubotDispatcher(adapterOutboxActors);
 	}
 	
 	/**
@@ -287,8 +283,8 @@ public abstract class Actor{
 				 	HMessageDelegate callback = hubotStruct.getCallback();
 				 	if(callback != null){
 				 		callback.onMessage(message);
-				 	}
-					inProcessMessage(message);
+				 	} else
+					    inProcessMessage(message);
 				}
 			}
 		}
@@ -297,14 +293,35 @@ public abstract class Actor{
 	protected abstract void inProcessMessage(HMessage incomingMessage);
 
 
+    /**
+     * Send an HMessage to a specified adapter outbox.
+     * @param hmessage
+     */
+    protected final void send(HMessage hmessage){
+        hubotDispatcher.dispatcher(hmessage, null);
+    }
 
 	/**
-	 * Send an HMessage to a specified adapter outbox.
-	 * @param hmessage
+	 * Send an HMessage to another actor.
+	 * @param hmessage a hmessage to send to a dedicated actor
+     * @param callback the callback to call if an answer is sent by the actor called. Note, you must set a timer value
+     * on the hMessage. if not the callback will be ingored
 	 */
 	protected final void send(HMessage hmessage, HMessageDelegate callback){
 		hubotDispatcher.dispatcher(hmessage, callback);
 	}
+
+    /**
+     * Send an HMessage to another actor.
+     * @param hmessage a hmessage to send to a dedicated actor
+     * @param callback the callback to call if an answer is sent by the actor called. Note, you must set a timer value
+     * on the hMessage. if not the callback will be ingored
+     * @param timeout the timeout value to use. (ms)
+     */
+    protected final void send(HMessage hmessage, HMessageDelegate callback, long timeout){
+        hmessage.setTimeout(timeout);
+        hubotDispatcher.dispatcher(hmessage, callback);
+    }
 	
 
 	/**
@@ -314,14 +331,15 @@ public abstract class Actor{
 	private class StatusDelegate implements HStatusDelegate {
 		/* Method use for incoming message/command */
 		public final void onStatus(HStatus status) {
-			if(status.getStatus() == ConnectionStatus.CONNECTED && outerclass.status == ActorStatus.CREATED) {
-				setStatus(ActorStatus.STARTED); 
+			if(status.getStatus() == ConnectionStatus.CONNECTED && outerclass.status == HubotStatus.CREATED) {
+				setStatus(HubotStatus.STARTED);
 				init(hClient);			
 			}
+            logger.info("Hubiquitus connection : "+status);
 		}		
 	}
 
-	private void setStatus(ActorStatus status) {
+	private void setStatus(HubotStatus status) {
 		this.status = status;
 		logger.info((topology.getType()+"("+topology.getActor()+") : "+status));
 	}
@@ -329,7 +347,7 @@ public abstract class Actor{
 	/**
 	 * Update a specified inboxAdapter's properties
 	 * @param adapterName : adapterName
-	 * @param params<String,String> : params - params for update properties
+	 * @param properties : params - params for update properties
 	 */
 	protected void updateInboxAdapterProperties(String adapterName, JSONObject properties) {
 		Adapter updatedAdapter = adapterInstances.get(adapterName + "Inbox");
@@ -339,7 +357,7 @@ public abstract class Actor{
 	/**
 	 * Update a specified outboxAdapter's properties
 	 * @param adapterName : adapterName
-	 * @param params<String,String> : params - params for update properties
+	 * @param properties : params - params for update properties
 	 */
 	protected void updateOutboxAdapterProperties(String adapterName, JSONObject properties) {
 		Adapter updatedAdapter = adapterInstances.get(adapterName + "Outbox");
@@ -350,21 +368,21 @@ public abstract class Actor{
 	/**
 	 * Retrived the instance of a specified AdapterInbox
 	 * You can use this method to modified some properties of this adapter
-	 * @param name
+	 * @param actor
 	 * @return the instance of this adapter
 	 */
-	protected final AdapterInbox getAdapterInbox(String name) {
-		return (AdapterInbox) adapterInstances.get(name+"Inbox");
+	protected final AdapterInbox getAdapterInbox(String actor) {
+		return (AdapterInbox) adapterInstances.get(actor);
 	}
 
 	/**
 	 * Retrived the instance of a specified AdapterOutbox
 	 * You can use this method to modified some properties of this adapter
-	 * @param name
+	 * @param actor
 	 * @return the instance of this adapter
 	 */
-	protected final AdapterOutbox getAdapterOutbox(String name) {
-		return (AdapterOutbox) adapterInstances.get(name+"Outbox");
+	protected final AdapterOutbox getAdapterOutbox(String actor) {
+		return (AdapterOutbox) adapterInstances.get(actor);
 	}
 	
 	
@@ -375,21 +393,21 @@ public abstract class Actor{
 	 * @param adapterInbox
 	 * @return
 	 */
-	protected final void addAdapterInbox(AdapterInbox adapterInbox) {
+	private final void addAdapterInbox(AdapterInbox adapterInbox) {
 		adapterInstances.put(adapterInbox.getActor(), adapterInbox);
 	}
 	
 	/**
 	 * Retrived the properties of this Bot
-	 * @return
+	 * @return a JSONObject for the properties set in the topology of the hubot (could be null)
 	 */
 	protected final JSONObject getProperties() {
-		return properties;
+		return topology.getProperties();
 	}
 	
 	/**
 	 * Helper to create a hMessage. Payload type could be instance of JSONObject(HAlert, HAck, HCommand ...), JSONObject, JSONArray, String, Boolean, Number
-	 * @param actor : The Actor for the hMessage. Mandatory.
+	 * @param actor : The Hubot for the hMessage. Mandatory.
 	 * @param type : The type of the hMessage. Not mandatory.
 	 * @param payload : The payload for the hMessage. Not mandatory.
 	 * @param options : The options if any to use for the creation of the hMessage. Not mandatory.
@@ -502,11 +520,11 @@ public abstract class Actor{
 	 * @param actor : The actor for the hMessage. Mandatory.
 	 * @param ref : The id of the message received, for correlation purpose. Mandatory.
 	 * @param status : Result status code. Mandatory.
-	 * @param result : The result of a command. Possible types: JSONObject, JSONArray, String, Boolean, Number. Not mandatory.
+	 * @param result : The result String of a command.
 	 * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
 	 * @return A hMessage with a hResult payload.
 	 */
-	public HMessage buildResult(String actor, String ref, ResultStatus status, Object result, HMessageOptions options){
+	public HMessage buildResult(String actor, String ref, ResultStatus status, String result, HMessageOptions options){
 		HMessage message = null;
 		try {
 			message = hClient.buildResult(actor, ref, status, result, options);
@@ -515,4 +533,76 @@ public abstract class Actor{
 		}
 		return message;
 	}
+    /**
+     * Helper to create a hMessage with a hResult payload.
+     * @param actor : The actor for the hMessage. Mandatory.
+     * @param ref : The id of the message received, for correlation purpose. Mandatory.
+     * @param status : Result status code. Mandatory.
+     * @param result : The result boolean of a command.
+     * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+     * @return A hMessage with a hResult payload.
+     */
+    public HMessage buildResult(String actor, String ref, ResultStatus status, boolean result, HMessageOptions options){
+        HMessage message = null;
+        try {
+            message = hClient.buildResult(actor, ref, status, result, options);
+        } catch (MissingAttrException e) {
+            logger.debug(e.toString());
+        }
+        return message;
+    }
+    /**
+     * Helper to create a hMessage with a hResult payload.
+     * @param actor : The actor for the hMessage. Mandatory.
+     * @param ref : The id of the message received, for correlation purpose. Mandatory.
+     * @param status : Result status code. Mandatory.
+     * @param result : The result double of a command.
+     * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+     * @return A hMessage with a hResult payload.
+     */
+    public HMessage buildResult(String actor, String ref, ResultStatus status, double result, HMessageOptions options){
+        HMessage message = null;
+        try {
+            message = hClient.buildResult(actor, ref, status, result, options);
+        } catch (MissingAttrException e) {
+            logger.debug(e.toString());
+        }
+        return message;
+    }
+    /**
+     * Helper to create a hMessage with a hResult payload.
+     * @param actor : The actor for the hMessage. Mandatory.
+     * @param ref : The id of the message received, for correlation purpose. Mandatory.
+     * @param status : Result status code. Mandatory.
+     * @param result : The result JSONArray of a command.
+     * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+     * @return A hMessage with a hResult payload.
+     */
+    public HMessage buildResult(String actor, String ref, ResultStatus status, JSONArray result, HMessageOptions options){
+        HMessage message = null;
+        try {
+            message = hClient.buildResult(actor, ref, status, result, options);
+        } catch (MissingAttrException e) {
+            logger.debug(e.toString());
+        }
+        return message;
+    }
+    /**
+     * Helper to create a hMessage with a hResult payload.
+     * @param actor : The actor for the hMessage. Mandatory.
+     * @param ref : The id of the message received, for correlation purpose. Mandatory.
+     * @param status : Result status code. Mandatory.
+     * @param result : The result JSONObject of a command.
+     * @param options : The options to use if any for the creation of the hMessage. Not mandatory.
+     * @return A hMessage with a hResult payload.
+     */
+    public HMessage buildResult(String actor, String ref, ResultStatus status, JSONObject result, HMessageOptions options){
+        HMessage message = null;
+        try {
+            message = hClient.buildResult(actor, ref, status, result, options);
+        } catch (MissingAttrException e) {
+            logger.debug(e.toString());
+        }
+        return message;
+    }
 }

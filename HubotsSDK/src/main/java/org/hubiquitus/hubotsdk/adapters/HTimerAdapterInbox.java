@@ -19,13 +19,17 @@
 
 package org.hubiquitus.hubotsdk.adapters;
 
-import java.util.Map;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.hubiquitus.hapi.hStructures.HAlert;
 import org.hubiquitus.hapi.hStructures.HMessage;
 import org.hubiquitus.hubotsdk.AdapterInbox;
+import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -37,10 +41,6 @@ import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.quartz.TriggerBuilder.*;
-import static org.quartz.CronScheduleBuilder.*;
-import static org.quartz.JobBuilder.newJob; 
 
 public class HTimerAdapterInbox extends AdapterInbox{
 
@@ -55,8 +55,8 @@ public class HTimerAdapterInbox extends AdapterInbox{
 		
 	public HTimerAdapterInbox() {}
 		
-	public HTimerAdapterInbox(String name) {
-		this.name = name;
+	public HTimerAdapterInbox(String actor) {
+		this.actor = actor;
 	}
 
 	@Override
@@ -101,10 +101,10 @@ public class HTimerAdapterInbox extends AdapterInbox{
 	
 	private void sendMessage() {
 		HMessage timerMessage = new HMessage();
-		timerMessage.setAuthor(name);
+		timerMessage.setAuthor(actor);
 		timerMessage.setType("hAlert");
 		HAlert halert = new HAlert();
-		halert.setAlert(name);
+		halert.setAlert(actor);
 		timerMessage.setPayload(halert);
 		put(timerMessage);
 	}
@@ -125,15 +125,21 @@ public class HTimerAdapterInbox extends AdapterInbox{
 
 
 	@Override
-	public void setProperties(Map<String,String> params) {	
-		if(params != null) {
-			if( params.containsKey("mode"))
-				this.mode = params.get("mode");
-			if( params.containsKey("crontab"))
-				this.crontab = params.get("crontab");
-			if( params.containsKey("period"))
-				this.period = Integer.parseInt(params.get("period"));
-			
+	public void setProperties(JSONObject properties) {	
+		if(properties != null) {
+			try {
+				if(properties.has("mode")){
+					this.mode = properties.getString("mode");
+				}
+				if(properties.has("crontab")){
+					this.crontab = properties.getString("crontab");
+				}
+				if(properties.has("period")){
+					this.period = properties.getInt("period");
+				}
+			} catch (Exception e) {
+				logger.debug("message: ", e);
+			}
 		}
 	}
 	

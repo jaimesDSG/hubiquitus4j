@@ -19,12 +19,15 @@
 
 package org.hubiquitus.HelloHttpBot;
 
-import org.hubiquitus.hapi.hStructures.HCommand;
 import org.hubiquitus.hapi.hStructures.HMessage;
 import org.hubiquitus.hubotsdk.Actor;
 import org.hubiquitus.hubotsdk.adapters.HHttpAdapter.HHttpData;
+import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class HelloHttpHubot extends Actor{
 
+	final Logger logger = LoggerFactory.getLogger(HelloHttpHubot.class);
 	public static void main(String[] args) throws Exception{
 		HelloHttpHubot hubot = new HelloHttpHubot();
 		hubot.start();
@@ -33,15 +36,19 @@ public class HelloHttpHubot extends Actor{
 	@Override
 	public void inProcessMessage(HMessage incomingMessage) {
 		System.out.println(incomingMessage);
+		incomingMessage.setType("hHttpData");
 		if (incomingMessage != null && incomingMessage.getType().equals("hHttpData")) {
-			System.out.println("httpdata : " + incomingMessage.getPayload());
-			HHttpData httpData = new HHttpData(incomingMessage.getPayload().toJSON());
+			System.out.println("httpdata : " + incomingMessage.getPayloadAsJSONObject());
+			HHttpData httpData = null;
+			try {
+				httpData = new HHttpData(incomingMessage.getPayloadAsJSONObject());
+			} catch (JSONException e) {
+				logger.debug(e.toString());
+			}
+			incomingMessage.setActor("httpOutbox@domain");// send to http outbox.
+			send(incomingMessage, null);
 			System.out.println(httpData);
 		}
-		
-	}
-	
-	public void inProcessCommand(HCommand incomingCommand) {
 	}
 
 }

@@ -30,6 +30,10 @@ public class HValue extends JSONObject {
 	public HValue(JSONObject jsonObj) throws JSONException{
 		super(jsonObj, JSONObject.getNames(jsonObj));
 	}
+	
+	public HValue(String jsonString) throws JSONException{
+		super(jsonString);
+	}
 	/**
 	 * @return The name of the attribute to compare with.
 	 */

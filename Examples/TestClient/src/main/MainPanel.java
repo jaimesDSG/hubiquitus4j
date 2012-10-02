@@ -316,7 +316,7 @@ public class MainPanel extends JPanel implements HStatusDelegate,
 			try {
 				jsonObj.put("text", messageField.getText());
 				HMessage message = client.buildMessage(actorField.getText(),
-						"text", messageField.getText(), msgOptions);
+						"text", jsonObj, msgOptions);
 				client.send(message, outerClass);
 			} catch (Exception e) {
 				e.printStackTrace();

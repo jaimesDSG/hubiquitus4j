@@ -19,26 +19,33 @@
 
 package org.hubiquitus.hubotsdk.adapters;
 
-import java.util.Map;
-
+import org.hubiquitus.hapi.client.HMessageDelegate;
 import org.hubiquitus.hapi.hStructures.HMessage;
 import org.hubiquitus.hubotsdk.AdapterInbox;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class HubotAdapterInbox extends AdapterInbox{
+public class HubotAdapterInbox extends AdapterInbox implements HMessageDelegate {
 	
-	private String jid;
-	private String endpoint;
+	final Logger logger = LoggerFactory.getLogger(HubotAdapterInbox.class);
+	private String actor;
 
-	public HubotAdapterInbox(String name) {
-		this.name = name;
+	public HubotAdapterInbox() {
+		super();
 	}
 	
 	@Override
-	public void setProperties(Map<String, String> params) {
-		if(params.get("jid") != null) 
-			this.jid = params.get("jid");
-		if(params.get("endpoint") != null) 
-			this.endpoint = params.get("endpoint");
+	public void setProperties(JSONObject properties) {
+		if(properties != null){
+			try {
+				if(properties.has("actor")){
+					this.actor = properties.getString("actor");
+				}
+			} catch (Exception e) {
+				logger.debug("message: ",e);
+			}
+		}
 	}
 
 	@Override
@@ -51,65 +58,7 @@ public class HubotAdapterInbox extends AdapterInbox{
 	}
 	
 	public void onMessage(HMessage message) {
-		if(!message.getPublisher().equals(jid))
+		if(!message.getPublisher().equals(actor))
 			put(message);		
-	}
-
-    /**
-     * get the Jid
-     * @return the jid of the current client actor
-     */
-	public String getJid() {
-		return jid;
-	}
-
-    /**
-      * @return the endpoint used for the connection with the hNode
-     */
-	public String getEndpoint() {
-		return endpoint;
-	}
-
-	@Override
-	public String toString() {
-		return "HubotAdapter [name=" + name + ", jid=" + jid + "]";
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((endpoint == null) ? 0 : endpoint.hashCode());
-		result = prime * result + ((jid == null) ? 0 : jid.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		HubotAdapterInbox other = (HubotAdapterInbox) obj;
-		if (endpoint == null) {
-			if (other.endpoint != null)
-				return false;
-		} else if (!endpoint.equals(other.endpoint))
-			return false;
-		if (jid == null) {
-			if (other.jid != null)
-				return false;
-		} else if (!jid.equals(other.jid))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
 	}
 }

@@ -20,9 +20,6 @@
 
 package org.hubiquitus.hubotsdk.adapters.HHttpAdapter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,35 +46,18 @@ public class HHttpData extends JSONObject {
 	/**
 	 * @return Post attachments sent with the query.
 	 */
-	public Map<String, HHttpAttachement> getAttachments() {
-			JSONObject jsonAttachements = null;
-			Map<String, HHttpAttachement> attachments = null;
-			try {
-				jsonAttachements = this.getJSONObject("attachments");
-			} catch (JSONException e) {
-				logger.debug(e.toString());
-			}
-			
-			if (jsonAttachements != null) {
-				String[] keys = JSONObject.getNames(jsonAttachements);
-				if (keys != null) {
-					attachments = new HashMap<String, HHttpAttachement>();
-					for (int i = 0; i < keys.length; i++) {
-						HHttpAttachement hattachement;
-						try {
-							hattachement = new HHttpAttachement(jsonAttachements.getJSONObject(keys[i]));
-							attachments.put(keys[i], hattachement);
-						} catch (JSONException e) {
-							logger.debug(e.toString());
-						}	
-					}
-				}
-			}
+	public JSONObject getAttachments() {
+		JSONObject attachments = null;
+		try {
+			attachments = this.getJSONObject("attachments");
+		} catch (JSONException e) {
+			logger.debug(e.toString());
+		}
 		return attachments;
 	}
 
-	public void setAttachments(Map<String, HHttpAttachement> attachments) {
-		if(attachments == null || attachments.isEmpty()){
+	public void setAttachments(JSONObject attachments) {
+		if(attachments == null || attachments.length()<=0){
 			try {
 				this.remove("attachments");
 			} catch (Exception e) {
@@ -85,17 +65,8 @@ public class HHttpData extends JSONObject {
 			}
 			return;
 		}
-		JSONObject jsonAttachments = new JSONObject();
-		for (String key : attachments.keySet()) {
-			try {
-				jsonAttachments.put(key, attachments.get(key));
-			} catch (JSONException e) {
-				logger.debug(e.toString());
-			}
-		}
-		
 		try {
-			this.put("attachments", jsonAttachments);
+			this.put("attachments", attachments);
 		} catch (JSONException e) {
 			logger.debug(e.toString());
 		}
