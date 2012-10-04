@@ -145,7 +145,12 @@ public class HBuilderTest {
 		}
 
 		HConvState hconvstate = new HConvState();
-		hconvstate.setStatus("test status");
+		try {
+			hconvstate.setStatus("test status");
+		} catch (MissingAttrException e) {
+			Assert.fail();
+			e.printStackTrace();
+		}
 
 		Assert.assertEquals(hmessage.getType(), "hConvState");
 		Assert.assertEquals(hmessage.getPayloadAsJSONObject().toString(),
@@ -193,7 +198,12 @@ public class HBuilderTest {
 		}
 
 		HAck hack = new HAck();
-		hack.setAck(ackvalue);
+		try {
+			hack.setAck(ackvalue);
+		} catch (MissingAttrException e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
 
 		Assert.assertEquals(hmessage.getType(), "hAck");
 		Assert.assertEquals(hmessage.getPayloadAsJSONObject().toString(), hack.toString());
@@ -240,7 +250,12 @@ public class HBuilderTest {
 		}
 
 		HAlert halert = new HAlert();
-		halert.setAlert(alert);
+		try {
+			halert.setAlert(alert);
+		} catch (MissingAttrException e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
 
 		Assert.assertEquals(hmessage.getType(), "hAlert");
 		Assert.assertEquals(hmessage.getPayloadAsJSONObject().toString(), halert.toString());
@@ -288,8 +303,14 @@ public class HBuilderTest {
 		}
 
 		HMeasure hmeasure = new HMeasure();
-		hmeasure.setUnit(unit);
-		hmeasure.setValue(value);
+		try {
+			hmeasure.setUnit(unit);
+			hmeasure.setValue(value);
+		} catch (MissingAttrException e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+		
 
 		Assert.assertEquals(hmessage.getType(), "hMeasure");
 		Assert.assertEquals(hmessage.getPayloadAsJSONObject().toString(),

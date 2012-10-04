@@ -19,6 +19,7 @@
 
 package org.hubiquitus.hapi.hStructures;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -60,10 +61,10 @@ public class HAlert extends JSONObject {
 		return alert;
 	}
 
-	public void setAlert(String alert) {
+	public void setAlert(String alert) throws MissingAttrException {
 		try {
-			if (alert == null) {
-				this.remove("alert");
+			if (alert == null || alert.length()<=0) {
+				throw new MissingAttrException("alert");
 			} else {
 				this.put("alert", alert);
 			}

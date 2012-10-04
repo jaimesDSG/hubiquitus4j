@@ -20,6 +20,7 @@
 package org.hubiquitus.hubotsdk.adapters.HHttpAdapter;
 
 import org.apache.commons.codec.binary.Base64;
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -59,12 +60,12 @@ public class HHttpAttachement extends JSONObject {
 	/**
 	 * Set the name of the attachment.
 	 * @param name
+	 * @throws MissingAttrException 
 	 */
-	public void setName(String name) {
+	public void setName(String name) throws MissingAttrException {
 		try {
 			if(name == null){
-				logger.error("message: name in hHttpAttacheme is mandatory.");
-				return;
+				throw new MissingAttrException("name");
 			}else{
 				this.put("name",name);
 			}
@@ -90,11 +91,12 @@ public class HHttpAttachement extends JSONObject {
 	/**
 	 * Set the data raw bytes.
 	 * @param data
+	 * @throws MissingAttrException 
 	 */
-	public void setData(byte[] data) {
+	public void setData(byte[] data) throws MissingAttrException {
 		try {
-			if(data == null){
-				logger.error("message: in hHttpAttacheme is mandatory.");
+			if(data == null || data.length<=0){
+				throw new MissingAttrException("data");
 			}else{
 				this.put("data", Base64.encodeBase64(data));
 			}
@@ -120,12 +122,12 @@ public class HHttpAttachement extends JSONObject {
 	/**
 	 * Set the type of content.
 	 * @param contentType
+	 * @throws MissingAttrException 
 	 */
-	public void setContentType(String contentType) {
+	public void setContentType(String contentType) throws MissingAttrException {
 		try {
-			if(contentType == null){
-				logger.error("message: contentType in hHttpAttacheme is mandatory");
-				return;
+			if(contentType == null ||  contentType.length()<=0){
+				throw new MissingAttrException("contentType");
 			}else{
 				this.put("contentType", contentType);
 			}

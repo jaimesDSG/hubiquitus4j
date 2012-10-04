@@ -19,6 +19,7 @@
 
 package org.hubiquitus.hapi.hStructures;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -59,10 +60,10 @@ public class HConvState extends JSONObject {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(String status) throws MissingAttrException {
 		try {
-			if (status == null) {
-				this.remove("status");
+			if (status == null || status.length()<=0) {
+				throw new MissingAttrException("status");
 			} else {
 				this.put("status", status);
 			}

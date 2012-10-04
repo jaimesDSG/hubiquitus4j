@@ -65,7 +65,7 @@ public class HOptions extends JSONObject {
 	public void setTransport(String transport) {
 
 		try {
-			if(transport != null){
+			if (transport != null && transport.length() > 0){
 				this.put("transport", transport);
 			}else{
 				this.put("transport", "socketio");

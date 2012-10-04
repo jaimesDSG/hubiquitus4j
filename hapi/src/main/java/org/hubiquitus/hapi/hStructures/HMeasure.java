@@ -19,6 +19,7 @@
 
 package org.hubiquitus.hapi.hStructures;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -59,10 +60,10 @@ public class HMeasure extends JSONObject {
 		return unit;
 	}
 
-	public void setUnit(String unit) {
+	public void setUnit(String unit) throws MissingAttrException {
 		try {
-			if (unit == null) {
-				this.remove("unit");
+			if (unit == null || unit.length()<=0) {
+				throw new MissingAttrException("unit");
 			} else {
 				this.put("unit", unit);
 			}
@@ -85,10 +86,10 @@ public class HMeasure extends JSONObject {
 		return value;
 	}
 
-	public void setValue(String value) {
+	public void setValue(String value) throws MissingAttrException {
 		try {
-			if (value == null) {
-				this.remove("value");
+			if (value == null || value.length()<=0) {
+				throw new MissingAttrException("value");
 			} else {
 				this.put("value", value);
 			}

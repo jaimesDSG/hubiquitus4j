@@ -19,7 +19,7 @@ public class HHttpAdapterOutbox extends AdapterOutbox {
 	}
 	@Override
 	public void sendMessage(HMessage message, HMessageDelegate callback) {
-		logger.info("-------------------> message send to http.");
+		logger.debug("-------------------> message send to http.");
 	}
 
 	@Override

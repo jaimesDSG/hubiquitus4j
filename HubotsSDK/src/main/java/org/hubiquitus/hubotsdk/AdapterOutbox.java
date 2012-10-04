@@ -32,7 +32,7 @@ public abstract class AdapterOutbox extends Adapter {
 	
 	// Method for output message and command
     @SuppressWarnings("unused")
-	public final void onOutGoing(HubotStructure hubotStruct) {
+	public final void onOutGoing(HubotMessageStructure hubotStruct) {
 		sendMessage(hubotStruct.getMessage(), hubotStruct.getCallback());
 	}
 

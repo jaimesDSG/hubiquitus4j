@@ -19,6 +19,7 @@
 
 package org.hubiquitus.hapi.hStructures;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
@@ -36,9 +37,13 @@ public class HCommand extends JSONObject {
 		super();
 	}
 
-	public HCommand(String cmd, JSONObject params) {
+	public HCommand(String cmd, JSONObject params){
 		this();
-		setCmd(cmd);
+		try {
+			setCmd(cmd);
+		} catch (MissingAttrException e) {
+			logger.error("message: ", e);
+		}
 		setParams(params);
 	}
 
@@ -61,10 +66,10 @@ public class HCommand extends JSONObject {
 		return cmd;
 	}
 
-	public void setCmd(String cmd) {
+	public void setCmd(String cmd) throws MissingAttrException {
 		try {
-			if (cmd == null) {
-				this.remove("cmd");
+			if (cmd == null || cmd.length()<=0) {
+				throw new MissingAttrException("cmd");
 			} else {
 				this.put("cmd", cmd);
 			}

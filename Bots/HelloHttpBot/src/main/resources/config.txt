@@ -1,7 +1,7 @@
 {
 	"type" : "com.mycompany.WordCount",
-	"actor" : "u1@localhost",
-	"pwd" : "u1",
+	"actor" : "u2@localhost",
+	"pwd" : "u2",
 	"hserver" : "http://localhost:8080",
 	"adapters" : [
 		{

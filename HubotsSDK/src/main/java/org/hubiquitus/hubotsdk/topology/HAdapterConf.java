@@ -1,5 +1,6 @@
 package org.hubiquitus.hubotsdk.topology;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -31,12 +32,12 @@ public class HAdapterConf extends JSONObject {
 	/**
 	 * Set the JID of the actor. 
 	 * @param actor
+	 * @throws MissingAttrException 
 	 */
-	public void setActor(String actor){
+	public void setActor(String actor) throws MissingAttrException{
 		try {
-			if(actor == null){
-				logger.error("message: actor attribute is mandatory");
-				return;
+			if(actor == null || actor.length()<=0){
+				throw new MissingAttrException("actor");
 			}
 			this.put("actor", actor);
 		} catch (JSONException e) {

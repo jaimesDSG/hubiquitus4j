@@ -19,13 +19,14 @@
 
 package org.hubiquitus.HelloHttpBot;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.hubiquitus.hapi.hStructures.HMessage;
-import org.hubiquitus.hubotsdk.Actor;
+import org.hubiquitus.hubotsdk.Hubot;
 import org.hubiquitus.hubotsdk.adapters.HHttpAdapter.HHttpData;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-public class HelloHttpHubot extends Actor{
+public class HelloHttpHubot extends Hubot{
 
 	final Logger logger = LoggerFactory.getLogger(HelloHttpHubot.class);
 	public static void main(String[] args) throws Exception{
@@ -45,7 +46,11 @@ public class HelloHttpHubot extends Actor{
 			} catch (JSONException e) {
 				logger.debug(e.toString());
 			}
-			incomingMessage.setActor("httpOutbox@domain");// send to http outbox.
+			try {
+				incomingMessage.setActor("httpOutbox@domain");
+			} catch (MissingAttrException e) {
+				logger.error("message: ", e);
+			}// send to http outbox.
 			send(incomingMessage, null);
 			System.out.println(httpData);
 		}

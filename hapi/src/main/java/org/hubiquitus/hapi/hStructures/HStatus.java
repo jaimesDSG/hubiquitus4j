@@ -19,6 +19,7 @@
 
 package org.hubiquitus.hapi.hStructures;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class HStatus extends JSONObject {
 	}
 
 	public HStatus(ConnectionStatus status, ConnectionError errorCode,
-			String errorMsg) {
+			String errorMsg) throws MissingAttrException {
 		setStatus(status);
 		setErrorCode(errorCode);
 		setErrorMsg(errorMsg);
@@ -64,10 +65,10 @@ public class HStatus extends JSONObject {
 		return status;
 	}
 
-	public void setStatus(ConnectionStatus status) {
+	public void setStatus(ConnectionStatus status) throws MissingAttrException {
 		try {
 			if (status == null) {
-				this.remove("status");
+				throw new MissingAttrException("status");
 			} else {
 				this.put("status", status.value());
 			}
@@ -90,10 +91,10 @@ public class HStatus extends JSONObject {
 		return errorCode;
 	}
 
-	public void setErrorCode(ConnectionError errorCode) {
+	public void setErrorCode(ConnectionError errorCode) throws MissingAttrException {
 		try {
 			if (errorCode == null) {
-				this.remove("errorCode");
+				throw new MissingAttrException("errorCode");
 			} else {
 				this.put("errorCode", errorCode.value());
 			}

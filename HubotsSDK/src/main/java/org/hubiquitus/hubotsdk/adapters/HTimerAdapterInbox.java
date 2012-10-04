@@ -26,6 +26,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.hubiquitus.hapi.hStructures.HAlert;
 import org.hubiquitus.hapi.hStructures.HMessage;
 import org.hubiquitus.hubotsdk.AdapterInbox;
@@ -104,7 +105,11 @@ public class HTimerAdapterInbox extends AdapterInbox{
 		timerMessage.setAuthor(actor);
 		timerMessage.setType("hAlert");
 		HAlert halert = new HAlert();
-		halert.setAlert(actor);
+		try {
+			halert.setAlert(actor);
+		} catch (MissingAttrException e) {
+			logger.error("message: ", e);
+		}
 		timerMessage.setPayload(halert);
 		put(timerMessage);
 	}

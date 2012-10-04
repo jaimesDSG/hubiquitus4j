@@ -22,9 +22,9 @@ package org.hubiquitus.TwitterBot;
 
 import org.apache.log4j.Logger;
 import org.hubiquitus.hapi.hStructures.HMessage;
-import org.hubiquitus.hubotsdk.Actor;
+import org.hubiquitus.hubotsdk.Hubot;
 
-public class TwitterBot extends Actor  {
+public class TwitterBot extends Hubot  {
 
 
 	private static Logger log = Logger.getLogger(TwitterBot.class);

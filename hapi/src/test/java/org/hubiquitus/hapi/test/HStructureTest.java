@@ -200,7 +200,7 @@ public class HStructureTest {
 			Assert.assertEquals(jsonObj.get("published").toString(), date.toString());
 			Assert.assertEquals(jsonObj.get("relevance").toString(), date.toString());
 			Assert.assertEquals(jsonObj.get("persistent"), _persistent);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("fail");
 		}
@@ -234,7 +234,7 @@ public class HStructureTest {
 			jsonObj = hconvstate;
 			
 			Assert.assertEquals(jsonObj.get("status"), status);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("fail");
 		}
@@ -380,7 +380,7 @@ public class HStructureTest {
 			
 			jsonObj = hack;
 			Assert.assertEquals(jsonObj.get("ack"), ack.value());
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("fail");
 		}
@@ -424,10 +424,10 @@ public class HStructureTest {
 			jsonObj = hcommand;
 
 			Assert.assertEquals(jsonObj.get("cmd"), cmd);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("fail");
-		}
+		} 
 	}
 	
 	//HAlert test
@@ -459,7 +459,7 @@ public class HStructureTest {
 			jsonObj = halert;
 			
 			Assert.assertEquals(jsonObj.get("alert"), alert);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("fail");
 		}
@@ -501,7 +501,7 @@ public class HStructureTest {
 
 			Assert.assertEquals(jsonObj.get("unit"), unit);
 			Assert.assertEquals(jsonObj.get("value"), value);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("fail");
 		}
@@ -551,7 +551,7 @@ public class HStructureTest {
 			Assert.assertEquals(jsonObj.get("status"), status.value());
 			Assert.assertEquals(jsonObj.get("errorCode"), errorCode.value());
 			Assert.assertEquals(jsonObj.get("errorMsg"), errorMsg);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("fail");
 		}
@@ -596,7 +596,7 @@ public class HStructureTest {
 
 			Assert.assertEquals(jsonObj.get("status"), status.value());
 			Assert.assertEquals(jsonObj.get("result"), result);
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("fail");
 		}

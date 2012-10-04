@@ -1,5 +1,6 @@
 package org.hubiquitus.hubotsdk.adapters;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.hubiquitus.hapi.hStructures.HGeo;
 import org.hubiquitus.hapi.hStructures.HLocation;
 import org.hubiquitus.hapi.hStructures.HMessage;
@@ -142,9 +143,7 @@ public class HTwitterAdapterInbox extends AdapterInbox{
 		//Construct the location 
 		HLocation location = new HLocation();
 		if(tweet.getGeoLocation() != null ) {
-            HGeo geo = new HGeo();
-            geo.setLat(tweet.getGeoLocation().getLatitude());
-            geo.setLng(tweet.getGeoLocation().getLongitude());
+			HGeo geo = new HGeo(tweet.getGeoLocation().getLatitude(), tweet.getGeoLocation().getLongitude());
 			location.setPos(geo);
 			message.setLocation(location);
 		}
@@ -186,10 +185,13 @@ public class HTwitterAdapterInbox extends AdapterInbox{
 		
 		//Construct the tweet JSONObject		
 		htweet.setId(tweet.getId());
-		htweet.setSource(tweet.getSource());
-		htweet.setText(tweet.getText());
-		htweet.setAuthor(hauthortweet);
-
+		try {
+			htweet.setSource(tweet.getSource());
+			htweet.setText(tweet.getText());
+			htweet.setAuthor(hauthortweet);
+		} catch (MissingAttrException e) {
+			log.error("mssage: ", e);
+		}
 		message.setPayload(htweet);
 		message.setType("hTweet");
 		message.setAuthor(tweet.getUser().getScreenName() + "@twitter.com");

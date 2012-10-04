@@ -19,6 +19,7 @@
 
 package org.hubiquitus.hapi.hStructures;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,10 +59,10 @@ public class HResult extends JSONObject {
 		return reqid;
 	}
 
-	public void setStatus(ResultStatus status) {
+	public void setStatus(ResultStatus status) throws MissingAttrException {
 		try {
 			if (status == null) {
-				this.remove("status");
+				throw new MissingAttrException("status");
 			} else {
 				this.put("status", status.value());
 			}

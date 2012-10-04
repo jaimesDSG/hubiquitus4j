@@ -24,6 +24,7 @@ package org.hubiquitus.hubotsdk.adapters.HtwitterAdapter;
  * 
  */
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -66,12 +67,12 @@ public class HTweet extends JSONObject{
 	/**
 	 * Set the text of the tweet.
 	 * @param text
+	 * @throws MissingAttrException 
 	 */
-	public void setText(String text) {
+	public void setText(String text) throws MissingAttrException {
 		try {
-			if(text == null || text.length()== 0) {
-				log.error("message: the text attribut is mandatory.");
-				return;
+			if(text == null || text.length()<= 0) {
+				throw new MissingAttrException("text");
 			} else {
 				this.put("text", text);
 			}
@@ -100,12 +101,12 @@ public class HTweet extends JSONObject{
 	/**
 	 * Set the source of the tweet.
 	 * @param source
+	 * @throws MissingAttrException 
 	 */
-	public void setSource(String source) {
+	public void setSource(String source) throws MissingAttrException {
 		try {
-			if(source == null || source.length()== 0 ) {
-				log.error("message: source attribute is mandatory.");
-				return;
+			if(source == null || source.length()<= 0 ) {
+				throw new MissingAttrException("source");
 			} else {
 				this.put("source", source);
 			}
@@ -138,11 +139,12 @@ public class HTweet extends JSONObject{
 	/**
 	 * Set the author of the tweet.
 	 * @param tweetAuthor
+	 * @throws MissingAttrException 
 	 */
-	public void setAuthor(HTweetAuthor tweetAuthor) {
+	public void setAuthor(HTweetAuthor tweetAuthor) throws MissingAttrException {
 		try {
-			if(tweetAuthor == null) {
-				log.error("message: the author attribute is mandatory.");
+			if(tweetAuthor == null || tweetAuthor.length()<=0) {
+				throw new MissingAttrException("author");
 			} else {
 				this.put("author", tweetAuthor);
 			}
@@ -174,11 +176,7 @@ public class HTweet extends JSONObject{
 	 */
 	public void setId(long id) {
 		try {
-			if(id == 0) {
-				this.remove("Id");
-			} else {
 				this.put("Id", id);
-			}
 		} catch (JSONException e) {
 			log.error("Can't update the Id Tweet  attribut",e);
 		}

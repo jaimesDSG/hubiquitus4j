@@ -1,5 +1,6 @@
 package org.hubiquitus.hubotsdk.topology;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.hubiquitus.hapi.hStructures.HCondition;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,12 +42,12 @@ public class HActor extends JSONObject {
 	/**
 	 * Set the type of the hActor.
 	 * @param type
+	 * @throws MissingAttrException 
 	 */
-	public void setType(String type){
+	public void setType(String type) throws MissingAttrException{
 		try {
-			if(type == null){
-				logger.error("message: type attribute is mandatory");
-				return;
+			if(type == null || type.length()<=0){
+				throw new MissingAttrException("type");
 			}
 			this.put("type", type);
 		} catch (JSONException e) {
@@ -70,12 +71,12 @@ public class HActor extends JSONObject {
 	/**
 	 * Set the JID of the actor. Used by the actor to establish a connection with the hserver.
 	 * @param actor
+	 * @throws MissingAttrException 
 	 */
-	public void setActor(String actor){
+	public void setActor(String actor) throws MissingAttrException{
 		try {
-			if(actor == null){
-				logger.error("message: actor attribute is mandatory");
-				return;
+			if(actor == null || actor.length()<=0){
+				throw new MissingAttrException("actor");
 			}
 			this.put("actor", actor);
 		} catch (JSONException e) {

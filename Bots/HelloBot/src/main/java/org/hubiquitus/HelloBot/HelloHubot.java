@@ -23,15 +23,17 @@ package org.hubiquitus.HelloBot;
 
 import org.hubiquitus.hapi.client.HClient;
 import org.hubiquitus.hapi.client.HMessageDelegate;
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.hubiquitus.hapi.hStructures.HMessage;
-import org.hubiquitus.hubotsdk.Actor;
+import org.hubiquitus.hubotsdk.Hubot;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 
-public class HelloHubot extends Actor{
+public class HelloHubot extends Hubot{
 
 	final Logger logger = LoggerFactory.getLogger(HelloHubot.class);
 	
@@ -42,7 +44,7 @@ public class HelloHubot extends Actor{
 
 		@Override
 		public void onMessage(HMessage message) {
-			System.out.println("*-*-*-*-*-callback 111*-*-*-*--*" + message);
+			logger.info("callback1 called by message: \n" + message);
 		}
 		
 	}
@@ -51,7 +53,7 @@ public class HelloHubot extends Actor{
 
 		@Override
 		public void onMessage(HMessage message) {
-			System.out.println("*-*-*-*-*-callback 222*-*-*-*--*" + message);
+			logger.info("callback2 called by message: \n" + message);
 		}
 		
 	}
@@ -69,32 +71,47 @@ public class HelloHubot extends Actor{
 	
 	@Override
 	protected void inProcessMessage(HMessage messageIncoming) {
-//		HMessage message = new HMessage();
-//		message.setType("hello");
-//		JSONObject jsonObj = messageIncoming.getPayloadAsJSONObject();
-//		String name = "Hello ";
-//		try {
-//			 name += jsonObj.getString("text");
-//		} catch (JSONException e) {
-//			logger.error(e.toString());
-//		}
-//		JSONObject payload = new JSONObject();
-//		try {
-//			payload.put("text", name);
-//		} catch (JSONException e) {
-//			logger.debug(e.toString());
-//		}
-//		message.setPayload(payload);
-//		
-//		message.setActor(messageIncoming.getPublisher());
-		if (!("hresult").equalsIgnoreCase(messageIncoming.getType())) {
-			HMessage cmdMessage1 = buildCommand("hnode@localhost", "hgetsubscriptions",
-					null, null);
-			cmdMessage1.setTimeout(30000);
-			HMessage cmdMessage2 = buildCommand("#test@localhost", "hgetlastmessages", new JSONObject(), null);
-			cmdMessage2.setTimeout(30000);
+		logger.info("--->" + messageIncoming);
+		if (!("hresult").equalsIgnoreCase(messageIncoming.getType()) && !("text").equalsIgnoreCase(messageIncoming.getType())) {
+			HMessage cmdMessage1 = null;
+			try {
+				cmdMessage1 = buildCommand("hnode@localhost", "hgetsubscriptions", null, null);
+				cmdMessage1.setTimeout(30000);
+			} catch (MissingAttrException e) {
+				logger.warn("message: ",e);
+			}
+			HMessage cmdMessage2 = null;
+			try {
+				cmdMessage2 = buildCommand("#test@localhost", "hgetlastmessages", new JSONObject(), null);
+				cmdMessage2.setTimeout(30000);
+			} catch (MissingAttrException e) {
+				logger.warn("message: ",e);
+			}
 			send(cmdMessage1, this.callback1);
 			send(cmdMessage2, this.callback2);
+		}else{
+			HMessage message = new HMessage();
+			message.setType("hello");
+			JSONObject jsonObj = messageIncoming.getPayloadAsJSONObject();
+			String name = "Hello ";
+			try {
+				 name += jsonObj.getString("text");
+			} catch (JSONException e) {
+				logger.error(e.toString());
+			}
+			JSONObject payload = new JSONObject();
+			try {
+				payload.put("text", name);
+			} catch (JSONException e) {
+				logger.debug(e.toString());
+			}
+			message.setPayload(payload);
+			try {
+				message.setActor(messageIncoming.getPublisher());
+			} catch (MissingAttrException e) {
+				logger.error("message: ", e);
+			}
+			send(message, null);
 		}
 	}
 

@@ -21,6 +21,7 @@
 package org.hubiquitus.hubotsdk.adapters.HHttpAdapter;
 
 import org.apache.commons.codec.binary.Base64;
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -122,12 +123,12 @@ public class HHttpData extends JSONObject {
 	/**
 	 * Define the method of the data. Possible values : get, post, put, delete
 	 * @param method
+	 * @throws MissingAttrException 
 	 */
-	public void setMethod(String method) {
+	public void setMethod(String method) throws MissingAttrException {
 		try {
-			if(method == null){
-				logger.error("message: method in hHttpData is mandatory.");
-				return;
+			if(method == null || method.length()<=0){
+				throw new MissingAttrException("method");
 			}else{
 				this.put("method", method);
 			}
@@ -210,12 +211,12 @@ public class HHttpData extends JSONObject {
 	/**
 	 * Set the host name used to do the query. eg : "localhost"
 	 * @param serverName
+	 * @throws MissingAttrException 
 	 */
-	public void setServerName(String serverName) {
+	public void setServerName(String serverName) throws MissingAttrException {
 		try {
-			if(serverName == null){
-				logger.error("message: serverName in hHttpData is mandatory.");
-				return;
+			if(serverName == null || serverName.length()<=0){
+				throw new MissingAttrException("serverName");
 			}else{
 				this.put("serverName", serverName);
 			}
@@ -227,8 +228,8 @@ public class HHttpData extends JSONObject {
 	/**
 	 * @return Port used to do the query. eg : 8080
 	 */
-	public Integer getServerPort() {
-		Integer serverPort = null;
+	public int getServerPort() {
+		int serverPort = 0;
 		try {
 			serverPort = this.getInt("serverPort");
 		} catch (Exception e) {
@@ -241,14 +242,9 @@ public class HHttpData extends JSONObject {
 	 * Set port used to do the query. eg : 8080
 	 * @param serverPort
 	 */
-	public void setServerPort(Integer serverPort) {
+	public void setServerPort(int serverPort) {
 		try {
-			if(serverPort == null){
-				logger.error("message: serverPort in hHttpData is mandatory.");
-				return;
-			}else{
 				this.put("serverPort", serverPort);
-			}
 		} catch (JSONException e) {
 			logger.debug(e.toString());
 		}

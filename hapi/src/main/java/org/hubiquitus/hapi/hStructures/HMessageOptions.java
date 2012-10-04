@@ -33,6 +33,7 @@ public class HMessageOptions {
 	private String convid = null;
 	private HMessagePriority priority = null;
 	private DateTime relevance = null;
+	private Integer relevanceOffset = null;
 	private Boolean persistent = null;
 	private HLocation location = null;
 	private String author = null;
@@ -81,6 +82,19 @@ public class HMessageOptions {
 	}
 	public void setRelevance(DateTime relevance) {
 		this.relevance = relevance;
+	}
+	
+	
+	public Integer getRelevanceOffset() {
+		return relevanceOffset;
+	}
+	/**
+	 * You can use this option to indicate a duration in ms. 
+	 * If you use this parameter, it will override the relevance one by updating the date-time for the relevance of the hMessage.
+	 * @param relevanceOffset
+	 */
+	public void setRelevanceOffset(Integer relevanceOffset) {
+		this.relevanceOffset = relevanceOffset;
 	}
 	
 	/**

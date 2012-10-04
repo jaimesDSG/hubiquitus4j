@@ -2,20 +2,5 @@
 "type" : "com.mycompany.WordCount",
 "actor" : "u1@localhost",
 "pwd" : "u1",
-"hserver" : "http://localhost:8080",
-"adapters" : [ {"actor" : "#test@localhost"},
-
-			   {"actor" : "httpInbox@domain", 
-			   "type" : "org.hubiquitus.hubotsdk.adapters.HHttpAdapterInbox",
-			   "properties" : {
-				"port" : "8086"
-				}
-			   },
-			    {"actor" : "httpOutbox@domain", 
-			   "type" : "org.hubiquitus.hubotsdk.adapters.HHttpAdapterOutbox",
-			   "properties" : {
-				"port" : "8086"
-				}
-			   }
-			 ]
+"hserver" : "http://localhost:8080"
 }

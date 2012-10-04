@@ -226,11 +226,8 @@ public class HClient {
 			notifyResultError(message.getMsgid(), ResultStatus.MISSING_ATTR, "Actor not found in message", messageDelegate);
 			return;
 		}
-
 		message.setSent(new DateTime());
 		message.setPublisher(transportOptions.getJid().getBareJID());
-	
-		
 		if (message.getTimeout() > 0) {
 			// hAPI will do correlation. If no answer within the
 			// timeout, a timeout error will be sent.
@@ -490,11 +487,17 @@ public class HClient {
 			hmessage.setRef(options.getRef());
 			hmessage.setConvid(options.getConvid());
 			hmessage.setPriority(options.getPriority());
-			hmessage.setRelevance(options.getRelevance());
+			//override relevance if relevanceOffset is set.
+			if (options.getRelevanceOffset() != null) {
+				hmessage.setRelevance((new DateTime()).plusMillis(options.getRelevanceOffset()));
+			}else{
+				hmessage.setRelevance(options.getRelevance());
+			}
 			hmessage.setPersistent(options.getPersistent());
 			hmessage.setLocation(options.getLocation());
 			hmessage.setAuthor(options.getAuthor());
 			hmessage.setHeaders(options.getHeaders());
+			hmessage.setPublished(options.getPublished());
 			hmessage.setTimeout(options.getTimeout());
 		}
 		if (transportOptions != null && transportOptions.getJid() != null) {
@@ -875,60 +878,6 @@ public class HClient {
         }
 
 	/**
-	 * Notify message delegate of an incoming hmessage. Run the message delegate.
-	 * @param message the message received
-	 * @param messageDelegate the delegate to call
-	 */
-	/*private void notifyMessage(final HMessage message, final HMessageDelegate messageDelegate) {
-		try {
-			if (messageDelegate != null) {
-				// return result asynchronously
-				(new Thread(new Runnable() {
-					public void run() {
-						try {
-							messageDelegate.onMessage(message);
-						} catch (Exception e) {
-							logger.error("message: ", e);
-						}
-					}
-				})).start();
-			} else {
-				// results are dropped
-			}
-		} catch (Exception e) {
-			logger.error("message: ", e);
-		}
-	}*/
-
-	/**
-	 * Helper function to return a hmessage with hresult error
-	 * @param ref used to update the hMessage sent as a result to the client
-	 * @param resultstatus the status of the error
-	 * @param errorMsg the error messsage
-	 */
-	/*private void notifyResultError(String ref, ResultStatus resultstatus, String errorMsg) {
-		JSONObject obj = new JSONObject();
-		try {
-			obj.put("errorMsg", errorMsg);
-		} catch (JSONException e) {
-			logger.error("message: ", e);
-		}
-		HMessage resultMsg = null;
-		try {
-            String ref2 = ref;
-            if (ref2 == null) {
-                // EBR : this may happend if the message is have some issue during its construction
-                ref2 = "ERROR";
-            }
-			resultMsg = buildResult(transportOptions.getJid().getBareJID(), ref2, resultstatus, obj, null);
-		} catch (MissingAttrException e) {
-			logger.warn("message: ",e);
-		}
-
-		this.notifyMessage(resultMsg);
-	}*/
-
-	/**
 	 * Helper function to return a hmessage with hresult error
      * @param ref used to update the hMessage sent as a result to the client
      * @param resultstatus the status of the error
@@ -944,7 +893,11 @@ public class HClient {
 		}
 		HResult hresult = new HResult();
 		hresult.setResult(obj);
-		hresult.setStatus(resultstatus);
+		try {
+			hresult.setStatus(resultstatus);
+		} catch (MissingAttrException e) {
+			logger.error("message: ", e);
+		}
 		HMessage message = new HMessage();
 		message.setRef(ref);
 		message.setType("hResult");

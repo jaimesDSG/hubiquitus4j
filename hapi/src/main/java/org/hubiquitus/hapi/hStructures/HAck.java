@@ -19,6 +19,7 @@
 
 package org.hubiquitus.hapi.hStructures;
 
+import org.hubiquitus.hapi.exceptions.MissingAttrException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -59,10 +60,10 @@ public class HAck extends JSONObject {
 		return ack;
 	}
 
-	public void setAck(HAckValue ack) {
+	public void setAck(HAckValue ack) throws MissingAttrException {
 		try {
 			if (ack == null) {
-				this.remove("ack");
+				throw new MissingAttrException("ack");
 			} else {
 				this.put("ack", ack.value());
 			}

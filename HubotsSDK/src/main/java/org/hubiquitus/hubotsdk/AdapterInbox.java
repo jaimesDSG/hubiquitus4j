@@ -25,7 +25,7 @@ public abstract class AdapterInbox extends Adapter {
 	
 	// Method for input message 
 	public final void put(HMessage message) {	
-		HubotStructure hubotStruct = new HubotStructure(message, null);
+		HubotMessageStructure hubotStruct = new HubotMessageStructure(message, null);
 		ProducerTemplateSingleton.getProducerTemplate().sendBody("seda:inbox",hubotStruct);
 	}
 

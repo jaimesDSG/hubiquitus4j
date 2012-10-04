@@ -21,7 +21,7 @@ public class HubotDispatcher {
 	
 	public  void dispatcher(HMessage msg, HMessageDelegate callback){
 		if (msg != null) {
-			HubotStructure hubotStruct = new HubotStructure(msg, callback);
+			HubotMessageStructure hubotStruct = new HubotMessageStructure(msg, callback);
 			String msgActor = msg.getActor();
 			if (!adapterOutboxActors.contains(msgActor)) {
 				put(HUBOT_ADAPTER_OUTBOX, hubotStruct);
@@ -31,7 +31,7 @@ public class HubotDispatcher {
 		}
 	}
 	
-	private void put(String adapterActor, HubotStructure hubotStruct) {
+	private void put(String adapterActor, HubotMessageStructure hubotStruct) {
 		String route = "seda:" + adapterActor;
 		try {
 			ProducerTemplateSingleton.getProducerTemplate().sendBody(route,hubotStruct);
